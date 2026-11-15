@@ -1,0 +1,718 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const kategoriAdi = { yoneylem: 'yöneylem', istatistik: 'istatistik', francais: 'français', yazi: 'yazı' };
+const renkler = [
+  'background:var(--turuncu);color:var(--murekkep);transform:rotate(-.8deg)',
+  'background:var(--kayisi);color:var(--murekkep);transform:rotate(.6deg)',
+  'background:var(--murekkep);color:var(--krem);transform:rotate(-.4deg)',
+];
+const sonNotlar = (await getCollection('defter', ({ data }) => data.durum === 'yayinda'))
+  .sort((a, b) => b.data.tarih.valueOf() - a.data.tarih.valueOf())
+  .slice(0, 3);
+---
+<Base title="Yağız Şahinbaş" aktif="masa" bodyBg="var(--masa)">
+  <div slot="header-right" class="tools">
+    <button class="pill" id="tidyBtn" type="button">▦ topla</button>
+    <button class="pill" id="lightBtn" type="button" aria-pressed="false">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></svg>
+      <span id="lightLabel">ışığı kapat</span>
+    </button>
+  </div>
+
+  <main id="masa" class="masa">
+    <div id="intro" class="intro">
+      <button id="sigBtn" class="sig-btn" type="button" aria-label="İmzayı yeniden çiz">
+        <span id="sigDraw" class="sig-draw reveal"><span class="sigmask sig-ink"></span></span>
+      </button>
+      <h1 class="hello">Selam, ben Yağız.</h1>
+      <p class="intro-text">Bu masa kafamın içine en yakın şey: biraz dağınık ama her şeyin bir hikâyesi var. Bir şeyi kaldır, tıkla, kurcala.</p>
+      <p class="hint">ipucu: kasete bas, sonra ışığı kapat ↗</p>
+    </div>
+
+    <!-- POLAROID -->
+    <div class="item" data-id="polaroid"><button class="obj" type="button" aria-label="Polaroid: ben">
+      <span class="polaroid">
+        <img src="/foto.jpg" alt="Yağız'ın fotoğrafı" draggable="false" />
+        <span class="el cap">ben, 2026</span>
+      </span>
+    </button></div>
+
+    <!-- NEWSPAPER -->
+    <div class="item" data-id="gazete"><button class="obj" type="button" aria-label="Gazete: Fintech Vizyon">
+      <span class="gazete">
+        <span class="mono g-top"><span>BUGÜNÜN SAYISI</span><span>FİYATI: 1 TIK</span></span>
+        <span class="g-name">FİNTECH VİZYON</span>
+        <span class="g-head">Para artık bir uygulama. Biz de onu anlatıyoruz.</span>
+        <span class="g-body"><span class="g-img"></span><span class="g-lines"></span></span>
+      </span>
+    </button></div>
+
+    <!-- NOTEBOOK -->
+    <div class="item" data-id="defter"><button class="obj" type="button" aria-label="Defter: ders notlarım ve yazılarım">
+      <span class="notebook">
+        <span class="nb-band"></span>
+        <span class="nb-label">
+          <span class="mono nb-no">NO. 1</span>
+          <span class="nb-title">Defter</span>
+          <span class="el nb-sub">yöneylem, istatistik,<br />un peu de français</span>
+        </span>
+        <span class="el nb-open">aç beni →</span>
+      </span>
+    </button></div>
+
+    <!-- CASSETTE -->
+    <div class="item" data-id="kaset"><button class="obj" type="button" aria-label="Kaset: çal">
+      <span class="kaset">
+        <span class="k-label">
+          <span class="el k-text">kulüp provası, A yüzü</span>
+          <span class="k-window"><span class="reel"></span><span class="reel"></span></span>
+        </span>
+        <span class="k-bottom"></span>
+        <span class="mono k-play">▶ çal</span>
+      </span>
+    </button></div>
+
+    <!-- STICKY -->
+    <div class="item" data-id="not"><button class="obj" type="button" aria-label="Yapışkan not: küçük araçlar">
+      <span class="sticky el">
+        <span class="tape"></span>
+        <span class="s-h">bugün:</span>
+        <span>[x] rapor kendi kendini yazdı</span>
+        <span>[x] tekrar eden işi sildim</span>
+        <span>[ ] uyku</span>
+      </span>
+    </button></div>
+
+    <!-- CV FOLDER -->
+    <div class="item" data-id="klasor"><button class="obj" type="button" aria-label="Klasör: CV">
+      <span class="folder">
+        <span class="mono f-tab">CV</span>
+        <span class="f-paper"></span>
+        <span class="f-body">
+          <span class="el f-title">resmî kısım</span>
+          <span class="mono f-sub">tarihler, okullar, stajlar</span>
+        </span>
+      </span>
+    </button></div>
+
+    <!-- WRISTBAND -->
+    <div class="item" data-id="bileklik"><button class="obj" type="button" aria-label="Bileklik: GSÜFEST">
+      <span class="band">
+        <span class="b-strip">GSÜFEST 2026</span>
+        <span class="b-clip"></span>
+        <span class="b-end"></span>
+      </span>
+    </button></div>
+
+    <!-- ROSETTE -->
+    <div class="item" data-id="rozet"><button class="obj" type="button" aria-label="Kurdele: Akbank Case Marathon">
+      <span class="rosette">
+        <span class="r-tail r-l"></span><span class="r-tail r-r"></span>
+        <span class="r-ring"></span>
+        <span class="r-center"><span class="r-1">1</span><span class="mono r-case">CASE</span></span>
+      </span>
+    </button></div>
+
+    <!-- BADGE -->
+    <div class="item" data-id="kart"><button class="obj" type="button" aria-label="Yaka kartı: Beko stajı">
+      <span class="badge">
+        <span class="bd-strap"></span><span class="bd-clip"></span>
+        <span class="bd-card">
+          <span class="bd-brand">BEKO</span>
+          <span class="bd-row"><img src="/foto.jpg" alt="" draggable="false" /><span class="bd-who"><b>STAJYER</b>Yağız Ş.</span></span>
+          <span class="bd-bar"></span>
+        </span>
+      </span>
+    </button></div>
+
+    <!-- PIN -->
+    <div class="item" data-id="rozetpin"><button class="obj" type="button" aria-label="Rozet: AFLİM">
+      <span class="pin"><span class="pin-name">AFLİM</span><span class="mono pin-sub">mezunuz, hâlâ buradayız</span></span>
+    </button></div>
+
+    <!-- DIE -->
+    <div class="item" data-id="zar"><button class="obj" type="button" aria-label="Zar: at">
+      <span class="die" id="die">{Array.from({ length: 9 }).map(() => <span class="pip"></span>)}</span>
+    </button></div>
+
+    <!-- COFFEE -->
+    <div class="item" data-id="kahve"><button class="obj" type="button" aria-label="Kahve: bir yudum al">
+      <span class="coffee">
+        <span class="c-saucer"></span><span class="c-handle"></span>
+        <span class="c-cup"><span class="c-liquid" id="coffee"></span></span>
+      </span>
+    </button></div>
+
+    <!-- STAMP -->
+    <div class="item" data-id="muhur"><button class="obj" type="button" id="stampObj" aria-label="Mühürü al ve masaya imza bas" aria-pressed="false">
+      <span class="stamp">
+        <span class="st-handle"></span><span class="st-neck"></span>
+        <span class="st-base" id="stampBase"><span class="sigmask"></span></span>
+      </span>
+    </button></div>
+
+    <!-- POSTCARD -->
+    <div class="item" data-id="kartpostal"><button class="obj" type="button" aria-label="Kartpostal: bana yaz">
+      <span class="postcard">
+        <span class="el pc-msg">Bana yaz!<br /><span>bir fikir, bir soru ya da sadece selam.</span></span>
+        <span class="pc-addr">
+          <span class="pc-stamp"><span class="sigmask"></span></span>
+          <span class="mono pc-line">yagiz.sahinbas@gmail.com</span>
+          <span class="mono pc-line">in/yagiz-sahinbas</span>
+        </span>
+      </span>
+    </button></div>
+
+    <div id="spot" class="spot" aria-hidden="true"></div>
+    <span class="glow el" data-fx=".3" data-y="340" data-ty="300" style="--gr:-4deg;font-size:30px" aria-hidden="true">gece burası daha sessiz ✶</span>
+    <span class="glow el" data-fx=".5" data-y="700" data-ty="520" style="--gr:3deg;font-size:26px" aria-hidden="true">kahve lekeleri kasıtlıdır</span>
+    <span class="glow el" data-fx=".45" data-y="950" data-ty="560" style="--gr:-6deg;font-size:28px" aria-hidden="true">zarı at. ciddiyim.</span>
+    <span class="glow el" data-fx=".55" data-y="980" data-ty="760" style="--gr:2deg;font-size:26px" aria-hidden="true">mühürle her yere imza atabilirsin →</span>
+  </main>
+
+  <section class="notes">
+    <div class="wrap">
+      <div class="notes-head">
+        <h2>Defterden son sayfalar</h2>
+        <a href="/defter/">hepsi →</a>
+      </div>
+      <div class="notes-grid">
+        {sonNotlar.map((n, i) => (
+          <a class="ncard" href={`/defter/${n.id}/`} style={renkler[i % 3]}>
+            <span class="mono nc-kicker">{kategoriAdi[n.data.kategori]}{n.data.oynanabilir ? ' · oynanabilir' : ''}</span>
+            <span class="nc-title">{n.data.baslik}</span>
+            <span class="nc-sub">{n.data.ozet}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="selam" class="selam">
+    <div class="wrap selam-in">
+      <div>
+        <p class="el selam-k">bir kahveye ne dersin?</p>
+        <h2>Selam de.</h2>
+      </div>
+      <div class="selam-links">
+        <a class="dark-btn" href="mailto:yagiz.sahinbas@gmail.com">yagiz.sahinbas@gmail.com</a>
+        <a class="line-btn" href="https://linkedin.com/in/yagiz-sahinbas" rel="me">LinkedIn ↗</a>
+      </div>
+    </div>
+    <div class="wrap selam-foot mono">
+      <span>© {new Date().getFullYear()} Yağız Şahinbaş · İstanbul</span>
+      <span><span id="stampCount">0</span> imza basıldı bu ziyarette</span>
+    </div>
+  </section>
+
+  <div id="modal" class="modal" hidden>
+    <button class="modal-bg" type="button" aria-label="Kapat" data-close></button>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+      <div class="mono m-kicker" id="mKicker"></div>
+      <h2 id="mTitle"></h2>
+      <p id="mBody"></p>
+      <div class="m-actions">
+        <a id="mLink" class="dark-btn" href="#" hidden></a>
+        <button class="el m-close" type="button" data-close>← masaya geri koy</button>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast el" role="status" aria-live="polite" hidden></div>
+</Base>
+
+<style is:global>
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; }
+  .masa {
+    position: relative; max-width: 1400px; margin: 0 auto; height: 1000px;
+    background-image: radial-gradient(rgba(178,68,31,.22) 1.3px, transparent 1.5px);
+    background-size: 26px 26px; background-position: 13px 13px;
+    transition: height .6s; touch-action: pan-y;
+  }
+  .masa.stamping { cursor: copy; }
+  .masa:not(.ready) .item { visibility: hidden; }
+
+  .intro { position: absolute; left: clamp(20px, 4vw, 56px); top: 48px; width: min(440px, 34vw); z-index: 6; }
+  .sig-btn { display: block; width: min(380px, 29vw); aspect-ratio: 453 / 241; padding: 0; border: 0; background: none; cursor: pointer; }
+  .sig-draw { display: block; width: 100%; height: 100%; }
+  .sig-ink { width: 100%; height: 100%; color: var(--turuncu); transition: color .5s; }
+  .reveal { animation: reveal 2.4s cubic-bezier(.65,.05,.3,1) .4s both; }
+  @keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  .hello { margin: 14px 0 0; font-weight: 800; font-size: 58px; line-height: .95; letter-spacing: -.04em; }
+  .intro-text { margin: 14px 0 0; font-size: 19px; line-height: 1.45; max-width: 400px; }
+  .hint { margin: 14px 0 0; font-family: var(--el); font-size: 24px; line-height: 1.1; color: var(--turuncu-yazi); }
+  @media (max-width: 820px) {
+    .intro { position: relative; left: auto; top: auto; width: auto; padding: 28px 20px 0; }
+    .sig-btn { width: min(320px, 62vw); }
+    .hello { font-size: 44px; }
+    .intro-text { font-size: 17px; }
+  }
+
+  .item { position: absolute; transition: left .75s cubic-bezier(.3,1.25,.5,1), top .75s cubic-bezier(.3,1.25,.5,1); animation: drop .9s cubic-bezier(.3,1.3,.5,1) both; }
+  .item.dragging { transition: none; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-40px) scale(.96); } to { opacity: 1; transform: none; } }
+  .obj {
+    display: block; width: 100%; height: 100%; padding: 0; margin: 0; border: 0; background: none; text-align: left; cursor: grab; touch-action: none;
+    transform: rotate(var(--r, 0deg));
+    transition: transform .35s cubic-bezier(.3,1.4,.5,1), filter .3s;
+    filter: drop-shadow(0 8px 12px rgba(120,60,20,.22)) drop-shadow(0 2px 3px rgba(80,40,10,.18));
+  }
+  .masa.tidy .obj { touch-action: manipulation; cursor: pointer; }
+  .obj:hover { transform: rotate(calc(var(--r, 0deg) * .4)) translateY(-8px) scale(1.035); filter: drop-shadow(0 20px 24px rgba(120,60,20,.28)) drop-shadow(0 3px 4px rgba(80,40,10,.16)); }
+  .obj:active { cursor: grabbing; }
+  .obj:focus-visible { outline: 3px dashed var(--turuncu); outline-offset: 8px; }
+  .obj > span { display: block; width: 100%; height: 100%; position: relative; }
+
+  /* polaroid */
+  .polaroid { background: var(--kagit); padding: 12px 12px 0; border-radius: 3px; }
+  .polaroid img { display: block; width: 100%; height: 206px; object-fit: cover; object-position: 50% 35%; pointer-events: none; }
+  .polaroid .cap { display: block; font-size: 27px; text-align: center; margin-top: 4px; }
+  /* newspaper */
+  .gazete { background: var(--krem); padding: 12px 14px; }
+  .g-top { display: flex; justify-content: space-between; font-size: 8px; border-bottom: 1px solid var(--murekkep); padding-bottom: 4px; }
+  .g-name { display: block; font-weight: 800; font-size: 25px; letter-spacing: -.03em; line-height: 1; margin: 6px 0 4px; }
+  .g-head { display: block; border-top: 3px double var(--murekkep); padding-top: 6px; font-weight: 700; font-size: 15px; line-height: 1.1; }
+  .g-body { display: flex; gap: 10px; margin-top: 8px; }
+  .g-img { flex: 0 0 72px; height: 66px; background: radial-gradient(var(--turuncu) 1.4px, transparent 1.6px) 0 0 / 5px 5px; }
+  .g-lines { flex: 1; height: 66px; background: repeating-linear-gradient(#D9C3A6 0 2px, transparent 2px 7px); }
+  /* notebook */
+  .notebook { background: var(--turuncu); border-radius: 6px 14px 14px 6px; box-shadow: inset 14px 0 0 var(--turuncu-koyu); }
+  .nb-band { position: absolute; right: 34px; top: 0; bottom: 0; width: 12px; background: var(--murekkep); opacity: .85; }
+  .nb-label { position: absolute; left: 34px; right: 58px; top: 38px; background: var(--krem); padding: 12px 12px 10px; border-radius: 3px; }
+  .nb-no { display: block; font-size: 9px; color: var(--turuncu-yazi); }
+  .nb-title { display: block; font-weight: 800; font-size: 28px; letter-spacing: -.03em; line-height: 1; }
+  .nb-sub { display: block; font-size: 19px; line-height: 1.05; margin-top: 4px; }
+  .nb-open { position: absolute; left: 34px; bottom: 22px; font-size: 22px; }
+  /* cassette */
+  .kaset { background: var(--murekkep); border-radius: 10px; padding: 12px; }
+  .k-label { display: block; background: var(--kayisi); border-radius: 4px; height: 82px; padding: 6px 10px; position: relative; }
+  .k-text { display: block; font-size: 21px; line-height: 1; }
+  .k-window { position: absolute; left: 22px; right: 22px; bottom: 8px; height: 34px; background: #3B271C; border-radius: 17px; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
+  .reel { display: block; width: 26px; height: 26px; border-radius: 50%; border: 4px dashed var(--krem); }
+  .kaset.playing .reel { animation: spin .6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .k-bottom { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); width: 110px; height: 28px; background: #46301F; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%); }
+  .k-play { position: absolute; right: 12px; top: -10px; background: var(--turuncu); font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 3px; }
+  /* sticky */
+  .sticky { background: linear-gradient(var(--kayisi-acik), var(--kayisi) 30%); padding: 18px 16px; font-size: 24px; line-height: 1.12; }
+  .sticky > span { display: block; }
+  .tape { position: absolute !important; top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 80px; height: 24px; background: rgba(255,253,248,.6); }
+  .s-h { font-weight: 700; text-decoration: underline; }
+  /* folder */
+  .f-tab { position: absolute; left: 0; top: 0; width: 90px; height: 26px; background: #D9A766; border-radius: 8px 8px 0 0; font-size: 11px; font-weight: 600; padding: 5px 12px; }
+  .f-paper { position: absolute; left: 14px; right: 14px; top: 10px; height: 60px; background: var(--kagit); transform: rotate(-2deg); }
+  .f-body { position: absolute; left: 0; right: 0; top: 22px; bottom: 0; background: var(--kayisi); border-radius: 0 8px 8px 8px; padding: 30px 18px 14px; }
+  .f-title { display: block; font-size: 26px; line-height: 1; }
+  .f-sub { display: block; font-size: 10px; margin-top: 10px; }
+  /* band */
+  .band { display: flex !important; align-items: center; }
+  .b-strip { flex: 1; height: 38px; background: repeating-linear-gradient(90deg, var(--turuncu) 0 14px, var(--turuncu-acik) 14px 28px); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; letter-spacing: .14em; }
+  .b-clip { width: 28px; height: 30px; background: #B9BEC4; border-radius: 4px; margin-left: -2px; }
+  .b-end { width: 34px; height: 38px; background: repeating-linear-gradient(90deg, var(--turuncu) 0 14px, var(--turuncu-acik) 14px 28px); clip-path: polygon(0 0, 100% 0, 70% 50%, 100% 100%, 0 100%); }
+  /* rosette */
+  .r-tail { position: absolute; top: 88px; width: 32px; height: 96px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%); }
+  .r-l { left: 26px; background: var(--turuncu); transform: rotate(14deg); }
+  .r-r { left: 70px; background: var(--turuncu-koyu); transform: rotate(-14deg); }
+  .r-ring { position: absolute; left: 7px; top: 0; width: 116px; height: 116px; border-radius: 50%; background: repeating-conic-gradient(var(--turuncu) 0 9deg, var(--turuncu-acik) 9deg 18deg); }
+  .r-center { position: absolute; left: 28px; top: 21px; width: 74px; height: 74px; border-radius: 50%; background: var(--kayisi); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 0 3px var(--kagit); }
+  .r-1 { font-weight: 800; font-size: 34px; line-height: 1; }
+  .r-case { font-size: 7px; }
+  /* badge */
+  .bd-strap { position: absolute; left: 50%; top: -60px; transform: translateX(-50%); width: 24px; height: 74px; background: repeating-linear-gradient(0deg, var(--murekkep) 0 10px, #46301F 10px 20px); }
+  .bd-clip { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); width: 40px; height: 16px; background: #B9BEC4; border-radius: 4px; }
+  .bd-card { position: absolute; inset: 14px 0 0; background: var(--kagit); border-radius: 10px; padding: 18px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .bd-brand { font-weight: 800; font-size: 22px; letter-spacing: .02em; }
+  .bd-row { display: flex; gap: 10px; align-items: center; }
+  .bd-row img { width: 48px; height: 56px; object-fit: cover; object-position: 50% 30%; border-radius: 4px; pointer-events: none; }
+  .bd-who { font-size: 12px; line-height: 1.25; }
+  .bd-who b { display: block; }
+  .bd-bar { margin-top: auto; height: 24px; background: repeating-linear-gradient(90deg, var(--murekkep) 0 1px, transparent 1px 3px, var(--murekkep) 3px 5px, transparent 5px 7px); }
+  /* pin */
+  .pin { display: flex !important; border-radius: 50%; background: var(--murekkep); color: var(--kayisi); align-items: center; justify-content: center; flex-direction: column; box-shadow: inset 0 0 0 5px var(--kayisi), inset 0 0 0 8px var(--murekkep); }
+  .pin-name { font-weight: 800; font-size: 19px; letter-spacing: .04em; }
+  .pin-sub { font-size: 7px; margin-top: 2px; text-align: center; padding: 0 10px; }
+  /* die */
+  .die { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 13px; background: var(--kagit); border-radius: 16px; box-shadow: inset -4px -5px 0 rgba(120,60,20,.1); }
+  .pip { display: block; border-radius: 50%; }
+  .pip.on { background: var(--turuncu); }
+  .die.shake { animation: shake .55s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes shake { 30% { transform: rotate(200deg) scale(1.25); } 60% { transform: rotate(330deg) scale(.92); } 100% { transform: rotate(360deg); } }
+  /* coffee */
+  .c-saucer { position: absolute; inset: 0; border-radius: 50%; background: #F1E4D2; box-shadow: inset 0 0 0 8px var(--krem); }
+  .c-handle { position: absolute; right: 2px; top: 54px; width: 30px; height: 20px; border-radius: 10px; background: var(--turuncu); }
+  .c-cup { position: absolute; left: 19px; top: 19px; width: 92px; height: 92px; border-radius: 50%; background: var(--turuncu); display: flex; align-items: center; justify-content: center; }
+  .c-liquid { display: block; border-radius: 50%; width: 74px; height: 74px; background: radial-gradient(circle at 40% 35%, #8A5A35, #4A2A15 70%); transition: all .4s; }
+  .c-liquid.empty { background: transparent; box-shadow: inset 0 0 0 3px rgba(70,38,14,.35); }
+  /* stamp */
+  .st-handle { position: absolute; left: 33px; top: 0; width: 44px; height: 54px; border-radius: 22px 22px 8px 8px; background: linear-gradient(90deg, #A9763F, #D9A766 45%, #A9763F); }
+  .st-neck { position: absolute; left: 22px; top: 50px; width: 66px; height: 14px; background: #7D5428; border-radius: 3px; }
+  .st-base { position: absolute; left: 0; top: 62px; width: 110px; height: 64px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--turuncu-yazi); transition: all .25s; }
+  .st-base .sigmask { width: 74px; height: 40px; color: var(--kagit); }
+  .st-base.on { background: var(--turuncu); box-shadow: 0 0 0 4px var(--murekkep); }
+  /* postcard */
+  .postcard { display: flex !important; background: var(--kagit); padding: 14px; gap: 12px; }
+  .pc-msg { flex: 1; border-right: 1px solid #D9C3A6; padding-right: 10px; font-size: 25px; line-height: 1.05; }
+  .pc-msg span { font-size: 19px; color: var(--soluk); }
+  .pc-addr { flex: 1; display: flex; flex-direction: column; gap: 9px; }
+  .pc-stamp { align-self: flex-end; width: 50px; height: 58px; border: 3px dotted var(--turuncu); display: flex; align-items: center; justify-content: center; }
+  .pc-stamp .sigmask { width: 40px; height: 22px; color: var(--turuncu); }
+  .pc-line { display: block; border-bottom: 1px solid #D9C3A6; font-size: 8.5px; padding-bottom: 2px; }
+
+  /* desk extras */
+  .ring { position: absolute; width: 114px; height: 114px; border-radius: 50%; box-shadow: inset 0 0 0 5px rgba(110,55,20,.32), inset 0 0 0 9px rgba(110,55,20,.08); filter: blur(.6px); pointer-events: none; z-index: 1; }
+  .stamp-mark { position: absolute; width: 130px; height: 69px; color: var(--turuncu); opacity: .85; pointer-events: none; z-index: 50; mix-blend-mode: multiply; animation: stampin .28s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes stampin { from { opacity: 0; scale: 1.6; } to { opacity: .85; scale: 1; } }
+  .spot { position: absolute; inset: 0; z-index: 60; pointer-events: none; display: none; }
+  .glow { position: absolute; transform: rotate(var(--gr)); line-height: 1; white-space: nowrap; pointer-events: none; z-index: 2; color: rgba(178,68,31,.06); transition: color .6s; }
+  body.dark .spot { display: block; }
+  body.dark .glow { z-index: 62; color: var(--kayisi); text-shadow: 0 0 12px rgba(237,190,128,.8); }
+  body.dark .intro { z-index: 62; color: var(--krem); }
+  body.dark .sig-ink { color: var(--kayisi); filter: drop-shadow(0 0 10px rgba(237,190,128,.85)); }
+  body.dark .hint { color: var(--kayisi); }
+  body.dark .stamp-mark { color: var(--kayisi); mix-blend-mode: normal; z-index: 63; }
+
+  /* notes strip */
+  .notes { background: var(--krem); border-top: 2px solid var(--murekkep); }
+  .notes .wrap { padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(48px, 6vw, 80px); }
+  .notes-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 14px; margin-bottom: 28px; }
+  .notes-head h2 { margin: 0; font-weight: 800; font-size: clamp(34px, 4vw, 52px); letter-spacing: -.03em; line-height: 1; }
+  .notes-head a { font-weight: 700; text-decoration: none; border-bottom: 2px solid currentColor; }
+  .notes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .ncard { display: block; text-decoration: none; padding: 22px; min-height: 200px; border-radius: 4px; transition: transform .35s cubic-bezier(.3,1.4,.5,1); }
+  .ncard:hover { color: inherit; translate: 0 -6px; }
+  .nc-kicker { display: block; font-size: 11px; }
+  .nc-title { display: block; margin-top: 54px; font-weight: 800; font-size: 25px; line-height: 1.1; }
+  .nc-sub { display: block; margin-top: 8px; font-size: 15px; }
+
+  /* hello */
+  .selam { background: var(--turuncu); border-top: 2px solid var(--murekkep); }
+  .selam-in { padding-top: clamp(56px, 7vw, 96px); padding-bottom: 32px; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-end; justify-content: space-between; }
+  .selam-k { margin: 0 0 10px; font-size: 30px; }
+  .selam h2 { margin: 0; font-weight: 800; font-size: clamp(48px, 8vw, 116px); line-height: .9; letter-spacing: -.045em; }
+  .selam-links { display: flex; flex-wrap: wrap; gap: 12px; }
+  .dark-btn { text-decoration: none; background: var(--murekkep); color: var(--krem); padding: 15px 20px; font-weight: 700; min-height: 50px; display: inline-flex; align-items: center; border-radius: 999px; }
+  .dark-btn:hover { color: var(--kayisi); }
+  .line-btn { text-decoration: none; border: 2px solid var(--murekkep); padding: 15px 20px; font-weight: 700; min-height: 50px; display: inline-flex; align-items: center; border-radius: 999px; }
+  .line-btn:hover { background: var(--murekkep); color: var(--krem); }
+  .selam-foot { padding-top: 20px; padding-bottom: 28px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 12px; }
+
+  /* modal + toast */
+  .modal { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal[hidden] { display: none; }
+  .modal-bg { position: absolute; inset: 0; background: rgba(42,26,18,.55); backdrop-filter: blur(4px); border: 0; cursor: zoom-out; }
+  .modal-card { position: relative; width: min(560px, 100%); max-height: 86vh; overflow: auto; padding: clamp(24px, 4vw, 40px); border-radius: 8px; box-shadow: 0 30px 60px rgba(42,26,18,.4); animation: pop .45s cubic-bezier(.3,1.5,.5,1) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(30px) rotate(-6deg) scale(.9); } to { opacity: 1; transform: rotate(-1.5deg); } }
+  .m-kicker { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
+  .modal-card h2 { margin: 8px 0 14px; font-size: clamp(32px, 5vw, 46px); line-height: .95; letter-spacing: -.03em; font-weight: 800; }
+  .modal-card p { margin: 0; font-size: 18px; line-height: 1.55; }
+  .m-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 24px; }
+  .m-actions .dark-btn { padding: 12px 18px; min-height: 44px; }
+  .m-close { font-size: 26px; background: transparent; border: 0; border-bottom: 2px solid currentColor; padding: 0 0 2px; cursor: pointer; min-height: 44px; }
+  .toast { position: fixed; left: 50%; bottom: 26px; z-index: 90; max-width: min(520px, 88vw); background: var(--kagit); padding: 12px 18px; border-radius: 14px; border: 2px solid var(--murekkep); font-size: 24px; line-height: 1.15; box-shadow: 0 12px 30px rgba(80,40,10,.25); transform: translateX(-50%); animation: toast .4s cubic-bezier(.3,1.5,.5,1) both; }
+  .toast[hidden] { display: none; }
+  @keyframes toast { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+</style>
+
+<script>
+  type Item = { id: string; w: number; h: number; r: number; fx: number; y: number };
+  const ITEMS: Item[] = [
+    { id: 'polaroid', w: 230, h: 268, r: -5, fx: .5, y: 40 },
+    { id: 'gazete', w: 250, h: 196, r: 4, fx: .73, y: 64 },
+    { id: 'bileklik', w: 230, h: 60, r: -12, fx: .91, y: 300 },
+    { id: 'defter', w: 230, h: 290, r: -2, fx: .5, y: 380 },
+    { id: 'klasor', w: 240, h: 170, r: 5, fx: .73, y: 330 },
+    { id: 'kaset', w: 230, h: 145, r: -4, fx: .12, y: 560 },
+    { id: 'not', w: 200, h: 190, r: 3, fx: .34, y: 505 },
+    { id: 'rozet', w: 130, h: 190, r: 8, fx: .06, y: 760 },
+    { id: 'kart', w: 160, h: 226, r: -5, fx: .22, y: 740 },
+    { id: 'rozetpin', w: 96, h: 96, r: 0, fx: .36, y: 720 },
+    { id: 'zar', w: 86, h: 86, r: 12, fx: .37, y: 860 },
+    { id: 'kahve', w: 130, h: 130, r: 0, fx: .64, y: 720 },
+    { id: 'muhur', w: 110, h: 140, r: -10, fx: .76, y: 560 },
+    { id: 'kartpostal', w: 280, h: 180, r: -3, fx: .87, y: 760 },
+  ];
+
+  type Story = { kicker: string; title: string; body: string; bg: string; href?: string; linkText?: string };
+  const STORIES: Record<string, Story> = {
+    polaroid: { kicker: 'merhaba', title: 'Bu benim.', bg: '#FFFDF8', body: 'Yağız. İstanbul’da yaşıyorum, Galatasaray’da endüstri mühendisliği okuyorum. Genelde bir işi nasıl daha az uğraşla yapabileceğimi düşünürken ya da bir tabloya gereğinden uzun bakarken bulunurum. Bu masa da onun hâli.' },
+    gazete: { kicker: 'Fintech Vizyon', title: 'Küçük bir gazete çıkarıyoruz', bg: '#FBF3E8', body: 'Fintech Vizyon’u birlikte kurduk: finans teknolojilerinde olanları, terimlere boğmadan anlatmaya çalışan bağımsız bir yayın. En sevdiğim kısmı, karmaşık bir haberi üç cümleye indirmeye uğraşmak.' },
+    defter: { kicker: 'açık defter', title: 'Ders notlarım burada', bg: '#E86743', body: 'Yöneylem, istatistik ve biraz Fransızca. Bir konuyu anlatabildiğim kadar anladığımı düşünüyorum; o yüzden notlarımı ve çözdüğüm soruları açık tutuyorum. Bazıları oynanabilir.', href: '/defter/', linkText: 'Defteri aç →' },
+    kaset: { kicker: '▶ şu an çalıyor', title: 'Kulüp provası', bg: '#EDBE80', body: 'GSÜ Müzik Kulübü’nün saymanıyım: konserlerin en az romantik ama en gerekli kısmı. Az önce duyduğun melodi kulübün değil, benim.' },
+    not: { kicker: 'yapışkan not', title: 'Kendi kendine çalışan şeyler', bg: '#F5CD94', body: 'İki yıl bir iletişim ajansında çalıştım. En çok, kimsenin yapmak istemediği tekrar eden işleri kendi kendine yapan küçük araçlar yazmayı sevdim. Hâlâ seviyorum.' },
+    klasor: { kicker: 'resmî kısım', title: 'CV', bg: '#EDBE80', body: 'Tarihler, okullar, stajlar, hepsi düzgünce sıralı. Masanın tek toplu köşesi.', href: '/cv/', linkText: 'CV’yi aç →' },
+    bileklik: { kicker: 'GSÜFEST 2026', title: 'İki gün, bir sahne', bg: '#FBF3E8', body: 'Okulun festivalinde bütçeyi tuttum; iletişim, lojistik ve sahne tarafında da koordinasyondaydım. Festival bitti, bileklik masada kaldı.' },
+    rozet: { kicker: 'Akbank Case Marathon', title: 'Birinci olduk', bg: '#E86743', body: 'Takımca bir vaka yarışmasında birinciliği aldık. Kurdeleyi ben çizdim; sevinç gerçekti.' },
+    kart: { kicker: 'şu sıralar', title: 'Beko’dayım', bg: '#FFFDF8', body: 'Yeni ürünlerin hayata geçtiği tarafta, NPI & System Intelligence ekibinde stajyerim. Bir ürünün fabrikaya kadar kaç adımdan geçtiğini öğreniyorum.' },
+    rozetpin: { kicker: 'AFLİM', title: 'Mezunuz, hâlâ buradayız', bg: '#EDBE80', body: 'Atatürk Fen Lisesi’nden mezun olduk ama ayrılamadık. Mezunlar derneğinde iletişim komitesindeyim; yani lise arkadaşlarına toplu mesaj atan kişi büyük ihtimalle benim.' },
+    kartpostal: { kicker: 'pul yapıştırılmıştır', title: 'Bana yaz', bg: '#FFFDF8', body: 'Bir fikir, bir soru, bir proje ya da sadece selam. yagiz.sahinbas@gmail.com adresinden ya da LinkedIn’den ulaşabilirsin.', href: 'mailto:yagiz.sahinbas@gmail.com', linkText: 'E-posta yaz →' },
+  };
+
+  const FACTS = [
+    '1: Zar atmak Bayesçi bir hobi sayılır mı? Bence sayılır.',
+    '2: Derslerin bir kısmı Fransızca. Bazen rüyamda bile “la contrainte” diyorum.',
+    '3: Oyun teorisini severim. Bu zarı atman da bir hamleydi.',
+    '4: Bu siteyi baştan üç kez yaptım. Bu dördüncüsü.',
+    '5: Işığı kapatmayı denedin mi?',
+    '6: Altı geldi. Bugün şanslı günündesin.',
+  ];
+  const SIPS = ['Yeni kahve. Taze.', 'Bir yudum.', 'Bir yudum daha.', 'Son yudum…', 'Bitti. Bir tık daha, yenisi gelsin.'];
+  const DIE: Record<number, number[]> = {
+    1: [0,0,0, 0,1,0, 0,0,0], 2: [1,0,0, 0,0,0, 0,0,1], 3: [1,0,0, 0,1,0, 0,0,1],
+    4: [1,0,1, 0,0,0, 1,0,1], 5: [1,0,1, 0,1,0, 1,0,1], 6: [1,0,1, 1,0,1, 1,0,1],
+  };
+
+  const desk = document.getElementById('masa') as HTMLElement;
+  const intro = document.getElementById('intro') as HTMLElement;
+  const els: Record<string, HTMLElement> = {};
+  desk.querySelectorAll<HTMLElement>('.item').forEach((el) => { els[el.dataset.id!] = el; });
+
+  const st = {
+    tidy: false, tidyUser: null as null | boolean,
+    pos: {} as Record<string, { fx: number; y: number }>,
+    jitter: {} as Record<string, number>,
+    ztop: 30, dark: false, stampMode: false, sip: 0, stamps: 0,
+  };
+  const cur: Record<string, { x: number; y: number }> = {};
+
+  function layout() {
+    const W = desk.clientWidth;
+    const narrow = W < 820;
+    if (st.tidyUser === null) st.tidy = narrow;
+    desk.classList.toggle('tidy', st.tidy);
+    let deskH = 1000;
+    if (st.tidy) {
+      const top = narrow ? intro.offsetHeight + 40 : intro.offsetTop + intro.offsetHeight + 40;
+      const cols = Math.max(1, Math.floor((W - 24) / 280)), cw = (W - 24) / cols, ch = 320;
+      ITEMS.forEach((it, i) => {
+        const c = i % cols, r = Math.floor(i / cols);
+        place(it, 12 + c * cw + (cw - it.w) / 2, top + r * ch + (ch - it.h) / 2 + (it.id === 'kart' ? 30 : 0), 0);
+      });
+      deskH = top + Math.ceil(ITEMS.length / cols) * ch + 40;
+    } else {
+      ITEMS.forEach((it) => {
+        const p = st.pos[it.id];
+        const fx = p ? p.fx : it.fx, y = p ? p.y : it.y;
+        const x = Math.max(6, Math.min(W - it.w - 6, fx * W - it.w / 2));
+        place(it, x, y, it.r + (st.jitter[it.id] || 0));
+        deskH = Math.max(deskH, y + it.h + 60);
+      });
+    }
+    desk.style.height = deskH + 'px';
+    desk.querySelectorAll<HTMLElement>('.glow').forEach((g) => {
+      g.style.left = parseFloat(g.dataset.fx!) * 100 + '%';
+      g.style.top = (st.tidy ? g.dataset.ty : g.dataset.y) + 'px';
+    });
+    desk.classList.add('ready');
+  }
+  function place(it: Item, x: number, y: number, r: number) {
+    const el = els[it.id];
+    cur[it.id] = { x, y };
+    el.style.width = it.w + 'px';
+    el.style.height = it.h + 'px';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    if (!el.style.zIndex) el.style.zIndex = String(10 + ITEMS.indexOf(it));
+    (el.firstElementChild as HTMLElement).style.setProperty('--r', r + 'deg');
+  }
+  ITEMS.forEach((it, i) => { els[it.id].style.animationDelay = 0.15 + i * 0.06 + 's'; });
+
+  // sound
+  let ac: AudioContext | null = null;
+  function beep(kind: string) {
+    try {
+      const AC = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AC) return;
+      ac = ac || new AC();
+      const ctx = ac!;
+      const tone = (f: number, t: number, d: number, type: OscillatorType, vol: number) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type; o.frequency.value = f;
+        const s = ctx.currentTime + t;
+        g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(vol, s + .015); g.gain.exponentialRampToValueAtTime(.0008, s + d);
+        o.connect(g); g.connect(ctx.destination); o.start(s); o.stop(s + d + .02);
+      };
+      if (kind === 'jingle') [392, 523.25, 659.25, 587.33, 523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * .16, .2, 'triangle', .15));
+      if (kind === 'stamp') { tone(110, 0, .12, 'square', .08); tone(70, .01, .14, 'sine', .2); }
+      if (kind === 'die') [0, .07, .13, .2].forEach((t) => tone(300 + Math.random() * 500, t, .05, 'square', .05));
+      if (kind === 'sip') tone(420, 0, .12, 'sine', .08);
+    } catch (e) { /* sessiz kal */ }
+  }
+
+  // toast
+  const toast = document.getElementById('toast') as HTMLElement;
+  let tt: number | undefined;
+  function say(t: string) {
+    clearTimeout(tt);
+    toast.hidden = true; void toast.offsetWidth;
+    toast.textContent = t; toast.hidden = false;
+    tt = window.setTimeout(() => { toast.hidden = true; }, 3000);
+  }
+
+  // modal
+  const modal = document.getElementById('modal') as HTMLElement;
+  const card = modal.querySelector('.modal-card') as HTMLElement;
+  const mLink = document.getElementById('mLink') as HTMLAnchorElement;
+  let lastFocus: HTMLElement | null = null;
+  function openModal(id: string) {
+    const s = STORIES[id];
+    if (!s) return;
+    lastFocus = document.activeElement as HTMLElement;
+    (document.getElementById('mKicker') as HTMLElement).textContent = s.kicker;
+    (document.getElementById('mTitle') as HTMLElement).textContent = s.title;
+    (document.getElementById('mBody') as HTMLElement).textContent = s.body;
+    card.style.background = s.bg;
+    if (s.href) { mLink.href = s.href; mLink.textContent = s.linkText || 'Aç →'; mLink.hidden = false; } else mLink.hidden = true;
+    modal.hidden = false;
+    (modal.querySelector('.m-close') as HTMLElement).focus();
+  }
+  function closeModal() { modal.hidden = true; lastFocus?.focus(); }
+  modal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeModal));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  // actions
+  const dieEl = document.getElementById('die') as HTMLElement;
+  function showDie(v: number) { dieEl.querySelectorAll('.pip').forEach((p, i) => p.classList.toggle('on', !!DIE[v][i])); }
+  showDie(5);
+  const coffee = document.getElementById('coffee') as HTMLElement;
+  const stampBase = document.getElementById('stampBase') as HTMLElement;
+  const stampObj = document.getElementById('stampObj') as HTMLElement;
+  const kaset = desk.querySelector('.kaset') as HTMLElement;
+
+  function act(id: string) {
+    if (id === 'zar') {
+      const v = 1 + Math.floor(Math.random() * 6);
+      beep('die');
+      dieEl.classList.remove('shake'); void dieEl.offsetWidth; dieEl.classList.add('shake');
+      showDie(v); say(FACTS[v - 1]);
+      return;
+    }
+    if (id === 'kahve') {
+      st.sip = (st.sip + 1) % 5;
+      const lvl = (4 - st.sip) / 4, size = Math.max(8, 74 * (0.35 + 0.65 * lvl));
+      coffee.style.width = coffee.style.height = size + 'px';
+      coffee.classList.toggle('empty', lvl === 0);
+      beep('sip'); say(SIPS[st.sip]);
+      return;
+    }
+    if (id === 'muhur') {
+      st.stampMode = !st.stampMode;
+      stampBase.classList.toggle('on', st.stampMode);
+      desk.classList.toggle('stamping', st.stampMode);
+      stampObj.setAttribute('aria-pressed', String(st.stampMode));
+      say(st.stampMode ? 'Mühür elinde. Masada boş bir yere bas.' : 'Mühür yerine kondu.');
+      return;
+    }
+    if (id === 'kaset') {
+      beep('jingle');
+      kaset.classList.add('playing');
+      setTimeout(() => kaset.classList.remove('playing'), 1600);
+    }
+    openModal(id);
+  }
+
+  // drag + click
+  let drag: null | { id: string; it: Item; sx: number; sy: number; ox: number; oy: number; moved: boolean; W: number } = null;
+  let suppress = false;
+  ITEMS.forEach((it) => {
+    const el = els[it.id];
+    const btn = el.firstElementChild as HTMLElement;
+    btn.addEventListener('pointerdown', (e) => {
+      el.style.zIndex = String(++st.ztop);
+      if (st.tidy || e.button !== 0) return;
+      drag = { id: it.id, it, sx: e.clientX, sy: e.clientY, ox: cur[it.id].x, oy: cur[it.id].y, moved: false, W: desk.clientWidth };
+      try { btn.setPointerCapture(e.pointerId); } catch (err) { /* yoksay */ }
+    });
+    btn.addEventListener('click', () => {
+      if (suppress) { suppress = false; return; }
+      act(it.id);
+    });
+  });
+  const spot = document.getElementById('spot') as HTMLElement;
+  document.addEventListener('pointermove', (e) => {
+    if (drag) {
+      const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) > 5) {
+        drag.moved = true;
+        els[drag.id].classList.add('dragging');
+        if (drag.id === 'kahve') {
+          const ring = document.createElement('span');
+          ring.className = 'ring';
+          ring.style.left = drag.ox + 8 + 'px'; ring.style.top = drag.oy + 8 + 'px';
+          desk.prepend(ring);
+          const rings = desk.querySelectorAll('.ring'); if (rings.length > 8) rings[rings.length - 1].remove();
+        }
+      }
+      if (drag.moved) {
+        const x = drag.ox + dx, y = Math.max(-20, drag.oy + dy);
+        st.pos[drag.id] = { fx: (x + drag.it.w / 2) / drag.W, y };
+        cur[drag.id] = { x, y };
+        els[drag.id].style.left = x + 'px';
+        els[drag.id].style.top = y + 'px';
+      }
+    }
+    if (st.dark) {
+      const r = desk.getBoundingClientRect();
+      spot.style.background = `radial-gradient(circle 200px at ${e.clientX - r.left}px ${e.clientY - r.top}px, rgba(255,230,190,.05) 0, rgba(30,15,8,.18) 55%, rgba(30,15,8,.93) 100%)`;
+    }
+  });
+  const endDrag = () => {
+    if (!drag) return;
+    if (drag.moved) {
+      suppress = true; setTimeout(() => { suppress = false; }, 60);
+      els[drag.id].classList.remove('dragging');
+      if (desk.clientHeight < cur[drag.id].y + drag.it.h + 60) desk.style.height = cur[drag.id].y + drag.it.h + 60 + 'px';
+    }
+    drag = null;
+  };
+  document.addEventListener('pointerup', endDrag);
+  document.addEventListener('pointercancel', endDrag);
+
+  // stamps
+  desk.addEventListener('click', (e) => {
+    if (!st.stampMode || e.target !== desk) return;
+    const r = desk.getBoundingClientRect();
+    const m = document.createElement('span');
+    m.className = 'sigmask stamp-mark';
+    m.setAttribute('aria-hidden', 'true');
+    m.style.left = e.clientX - r.left - 65 + 'px';
+    m.style.top = e.clientY - r.top - 35 + 'px';
+    m.style.rotate = Math.round((Math.random() - .5) * 30) + 'deg';
+    desk.appendChild(m);
+    const marks = desk.querySelectorAll('.stamp-mark'); if (marks.length > 40) marks[0].remove();
+    st.stamps++;
+    (document.getElementById('stampCount') as HTMLElement).textContent = String(st.stamps);
+    beep('stamp');
+  });
+
+  // signature replay
+  const sigDraw = document.getElementById('sigDraw') as HTMLElement;
+  (document.getElementById('sigBtn') as HTMLElement).addEventListener('click', () => {
+    sigDraw.classList.remove('reveal'); void sigDraw.offsetWidth;
+    sigDraw.style.animationDelay = '0s'; sigDraw.classList.add('reveal');
+  });
+
+  // toolbar
+  const tidyBtn = document.getElementById('tidyBtn') as HTMLElement;
+  tidyBtn.addEventListener('click', () => {
+    if (st.tidy) {
+      ITEMS.forEach((it) => { st.jitter[it.id] = Math.round((Math.random() - .5) * 12); });
+      st.pos = {}; st.tidy = false; st.tidyUser = false; say('Tamam, eski hâline döndü.');
+    } else { st.tidy = true; st.tidyUser = true; say('Annem görse gurur duyardı.'); }
+    tidyBtn.textContent = st.tidy ? '✷ dağıt' : '▦ topla';
+    layout();
+  });
+  const lightBtn = document.getElementById('lightBtn') as HTMLElement;
+  lightBtn.addEventListener('click', () => {
+    st.dark = !st.dark;
+    document.body.classList.toggle('dark', st.dark);
+    lightBtn.setAttribute('aria-pressed', String(st.dark));
+    (document.getElementById('lightLabel') as HTMLElement).textContent = st.dark ? 'ışığı aç' : 'ışığı kapat';
+    if (st.dark) say('Fareyle etrafı aydınlat. Bir şeyler parlıyor olabilir.');
+  });
+
+  layout();
+  tidyBtn.textContent = st.tidy ? '✷ dağıt' : '▦ topla';
+  let rt: number | undefined;
+  window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(() => { layout(); tidyBtn.textContent = st.tidy ? '✷ dağıt' : '▦ topla'; }, 120); });
+</script>

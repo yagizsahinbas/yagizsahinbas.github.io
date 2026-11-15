@@ -1,0 +1,21 @@
+---
+baslik: "Mühendislik Fransızcası"
+ozet: Derslerde karşıma çıkan yöneylem ve istatistik terimleri; çevirisi ve örnek cümlesiyle.
+kategori: francais
+tarih: 2026-11-15
+oynanabilir: true
+---
+import Kartlar from '../../components/Kartlar.astro';
+
+Derslerin bir kısmı Fransızca olunca terimleri iki dilde öğrenmek zorunda kalıyorsun. Bu kartlar o listenin başı. Karta dokun; çevirisi ve bir örnek cümle açılsın.
+
+<Kartlar kartlar={[
+  { tur: 'yöneylem', fr: 'la recherche opérationnelle', tr: 'yöneylem araştırması', ornek: 'La recherche opérationnelle aide à prendre de meilleures décisions.' },
+  { tur: 'yöneylem', fr: 'la fonction objectif', tr: 'amaç fonksiyonu', ornek: 'On cherche à maximiser la fonction objectif.' },
+  { tur: 'yöneylem', fr: 'la contrainte', tr: 'kısıt', ornek: 'Chaque contrainte réduit l’ensemble des solutions.' },
+  { tur: 'istatistik', fr: 'l’écart-type', tr: 'standart sapma', ornek: 'L’écart-type mesure la dispersion des données.' },
+  { tur: 'üretim', fr: 'le goulot d’étranglement', tr: 'darboğaz', ornek: 'Le goulot d’étranglement limite toute la chaîne.' },
+  { tur: 'ekonomi', fr: 'le seuil de rentabilité', tr: 'başabaş noktası', ornek: 'Au-delà du seuil de rentabilité, l’entreprise gagne de l’argent.' },
+]} />
+
+Yeni terimler geldikçe bu listeye ekleyeceğim.

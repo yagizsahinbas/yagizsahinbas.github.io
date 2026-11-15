@@ -1,0 +1,95 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const KATEGORI = [
+  { k: 'hepsi', ad: 'Hepsi' },
+  { k: 'yoneylem', ad: 'Yöneylem' },
+  { k: 'istatistik', ad: 'İstatistik' },
+  { k: 'francais', ad: 'Français' },
+  { k: 'yazi', ad: 'Yazılar' },
+];
+const ad = Object.fromEntries(KATEGORI.map((c) => [c.k, c.ad]));
+const notlar = (await getCollection('defter')).sort((a, b) => {
+  if (a.data.durum !== b.data.durum) return a.data.durum === 'yayinda' ? -1 : 1;
+  return b.data.tarih.valueOf() - a.data.tarih.valueOf();
+});
+const tarih = (d: Date) => d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+<Base title="Defter — Yağız Şahinbaş" description="Yöneylem, istatistik ve Fransızca notlarım; biraz da yazı." aktif="defter">
+  <section class="d-hero">
+    <div class="wrap d-hero-in">
+      <h1>Defter</h1>
+      <p>Bir şeyi ancak anlatabildiğim kadar biliyorum. Ders notlarım, çözdüğüm sorular ve kurcalanabilir açıklamalar o yüzden burada, açıkta.</p>
+    </div>
+  </section>
+
+  <section class="wrap d-list">
+    <div class="d-bar">
+      <h2><span id="count">{notlar.length}</span> sayfa</h2>
+      <div class="chips" role="group" aria-label="Konuya göre süz">
+        {KATEGORI.map((c, i) => <button class="chip" type="button" data-k={c.k} aria-pressed={i === 0 ? 'true' : 'false'}>{c.ad}</button>)}
+      </div>
+    </div>
+    <ul class="entries">
+      {notlar.map((n) => {
+        const taslak = n.data.durum === 'taslak';
+        const Etiket = taslak ? 'div' : 'a';
+        return (
+          <li data-k={n.data.kategori}>
+            <Etiket class:list={['entry', { taslak }]} href={taslak ? undefined : `/defter/${n.id}/`}>
+              <span class="mono e-cat">{ad[n.data.kategori]}<br /><span class="e-date">{tarih(n.data.tarih)}</span></span>
+              <span class="e-main">
+                <span class="e-title">{n.data.baslik}</span>
+                <span class="e-sub">{n.data.ozet}</span>
+              </span>
+              <span class="mono e-badge">{taslak ? 'taslak' : n.data.oynanabilir ? 'oynanabilir' : 'oku'}</span>
+            </Etiket>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap"><a href="/">← masaya dön</a><span>© {new Date().getFullYear()} Yağız Şahinbaş</span></div>
+  </footer>
+</Base>
+
+<style>
+  .d-hero { background: var(--turuncu); border-bottom: 2px solid var(--murekkep); }
+  .d-hero-in { padding-top: clamp(48px, 6vw, 88px); padding-bottom: clamp(48px, 6vw, 88px); display: flex; flex-wrap: wrap; gap: 24px 60px; align-items: flex-end; justify-content: space-between; }
+  h1 { margin: 0; font-weight: 800; font-size: clamp(72px, 13vw, 190px); line-height: .82; letter-spacing: -.055em; }
+  .d-hero p { margin: 0; max-width: 430px; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.4; }
+  .d-list { padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(48px, 6vw, 80px); }
+  .d-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 2px solid var(--murekkep); padding-bottom: 14px; }
+  .d-bar h2 { margin: 0; font-size: 15px; font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-size: 14px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--murekkep); border-radius: 999px; padding: 8px 16px; min-height: 40px; background: transparent; transition: background .2s, color .2s; }
+  .chip:hover, .chip[aria-pressed='true'] { background: var(--murekkep); color: var(--krem); }
+  .entries { list-style: none; margin: 0; padding: 0; }
+  .entries li[hidden] { display: none; }
+  .entry { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 22px 6px; border-bottom: 1px solid rgba(42,26,18,.14); text-decoration: none; transition: background .2s; }
+  a.entry:hover { background: #F3E6D4; color: inherit; }
+  .e-cat { flex: 0 0 130px; font-size: 12px; padding-top: 6px; }
+  .e-date { color: var(--soluk); }
+  .e-main { flex: 999 1 360px; min-width: 0; }
+  .e-title { display: block; font-weight: 750; font-size: clamp(21px, 2vw, 27px); line-height: 1.15; letter-spacing: -.015em; }
+  .e-sub { display: block; margin-top: 6px; color: var(--soluk); }
+  .e-badge { align-self: flex-start; font-size: 12px; padding: 5px 11px; border: 1.5px solid var(--murekkep); border-radius: 999px; background: var(--turuncu); }
+  .taslak .e-badge { background: transparent; border-style: dashed; }
+  .taslak .e-title { color: var(--soluk); }
+</style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+  const items = document.querySelectorAll<HTMLElement>('.entries li');
+  const count = document.getElementById('count')!;
+  chips.forEach((c) => c.addEventListener('click', () => {
+    const k = c.dataset.k;
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+    let n = 0;
+    items.forEach((li) => { const show = k === 'hepsi' || li.dataset.k === k; li.hidden = !show; if (show) n++; });
+    count.textContent = String(n);
+  }));
+</script>

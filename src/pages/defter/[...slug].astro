@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const notlar = await getCollection('defter', ({ data }) => data.durum === 'yayinda');
+  return notlar.map((n) => ({ params: { slug: n.id }, props: { not: n } }));
+}
+
+const { not } = Astro.props;
+const { Content } = await render(not);
+const ad = { yoneylem: 'YÖNEYLEM', istatistik: 'İSTATİSTİK', francais: 'FRANÇAIS', yazi: 'YAZI' } as const;
+const tarih = not.data.tarih.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Base title={`${not.data.baslik} — Defter`} description={not.data.ozet} aktif="defter">
+  <article>
+    <header class="wrap n-head">
+      <p class="mono n-meta"><a href="/defter/">← Defter</a> · <span class="n-cat">{ad[not.data.kategori]}</span> · {tarih}{not.data.oynanabilir ? ' · oynanabilir' : ''}</p>
+      <h1>{not.data.baslik}</h1>
+      <p class="n-lead">{not.data.ozet}</p>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+  <footer class="site-footer">
+    <div class="wrap"><a href="/defter/">← Defter’e dön</a><span>© {new Date().getFullYear()} Yağız Şahinbaş</span></div>
+  </footer>
+</Base>
+
+<style>
+  .n-head { max-width: 860px; padding-top: clamp(48px, 6vw, 88px); padding-bottom: 24px; }
+  .n-meta { margin: 0; font-size: 12px; }
+  .n-meta a { text-decoration: none; }
+  .n-cat { color: var(--turuncu-yazi); }
+  h1 { margin: 18px 0 0; font-weight: 800; font-size: clamp(44px, 6.4vw, 88px); line-height: .92; letter-spacing: -.045em; }
+  .n-lead { margin: 22px 0 0; font-size: clamp(19px, 1.7vw, 22px); line-height: 1.45; color: #4A3A30; }
+</style>
+
+<style is:global>
+  .prose { padding-bottom: clamp(48px, 6vw, 80px); font-size: 18px; line-height: 1.65; }
+  .prose > :not(.tam) { max-width: 860px; margin-left: auto; margin-right: auto; padding-left: clamp(18px, 4vw, 48px); padding-right: clamp(18px, 4vw, 48px); }
+  .prose h2 { font-weight: 800; font-size: 30px; letter-spacing: -.02em; line-height: 1.1; margin-top: 44px; margin-bottom: 12px; }
+  .prose h3 { font-weight: 700; font-size: 22px; margin-top: 32px; margin-bottom: 8px; }
+  .prose p, .prose ul, .prose ol { margin-top: 0; margin-bottom: 18px; }
+  .prose ul, .prose ol { padding-left: calc(clamp(18px, 4vw, 48px) + 22px); }
+  .prose code { font-family: var(--mono); font-size: .88em; background: #F3E6D4; padding: 1px 5px; border-radius: 4px; }
+  .prose pre { font-family: var(--mono); font-size: 15px; background: var(--murekkep) !important; color: var(--krem); padding: 18px 20px; overflow-x: auto; border-radius: 4px; }
+  .prose pre code { background: none; padding: 0; color: inherit; }
+  .prose blockquote { border-left: 4px solid var(--turuncu); margin-left: auto; margin-right: auto; font-style: italic; }
+  .prose .tam { margin: 32px 0; }
+  .prose .not-kutu { background: var(--murekkep); color: var(--krem); padding: 16px 18px; border-radius: 4px; font-size: 16px; }
+  .prose .not-kutu .mono { font-size: 12px; color: var(--kayisi); }
+  .prose .kaynak { font-family: var(--mono); font-size: 13px; color: var(--soluk); }
+</style>

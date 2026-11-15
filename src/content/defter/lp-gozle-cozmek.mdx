@@ -1,0 +1,28 @@
+---
+baslik: "Bir LP problemini gözle çözmek"
+ozet: Simpleks yöntemi ilk bakışta bir tablo kalabalığı. Ama iki değişkenli bir problemde yaptığı şey gözle görülebiliyor.
+kategori: yoneylem
+tarih: 2026-11-15
+oynanabilir: true
+---
+import LPWidget from '../../components/LPWidget.astro';
+
+Simpleks, uygun bölgenin köşelerinde geziyor ve amaç fonksiyonunu artıramayacağı köşede duruyor. Aşağıdaki katsayıları kaydır, sonra "simpleks adımı at"a bas.
+
+<LPWidget />
+
+## Ne görüyoruz?
+
+Turuncu bölge, üç kısıtın aynı anda sağlandığı noktaların kümesi: **uygun bölge**. Kalın siyah çizgi, amaç fonksiyonunun aynı değeri aldığı noktalar; buna eş-kâr doğrusu deniyor. Katsayıları değiştirdikçe bu doğru dönüyor, kırmızı ok da Z'nin arttığı yönü gösteriyor.
+
+Eş-kâr doğrusunu ok yönünde kaydırdığını düşün. Uygun bölgeden ayrılmadan önce en son dokunduğu nokta optimum. Bu nokta hep bir köşe; doğru bir kenara paralelse o kenarın tamamı. Simpleks'in yalnızca köşelere bakmasının sebebi bu.
+
+## Dene
+
+x₂'nin katsayısını sıfıra çek: optimum (4, 3) ile (4, 0) arasındaki kenara kayar, ikisi de en iyidir. Katsayıları 3 ve 2 yap: eş-kâr doğrusu 3x₁ + 2x₂ = 18 kısıtına paralel olur ve (4, 3) ile (2, 6) arasındaki her nokta optimum olur.
+
+<div>
+<p class="not-kutu"><span class="mono">FRANSIZCASI</span><br />la méthode du simplexe · la région admissible (uygun bölge) · la solution optimale</p>
+</div>
+
+<p class="kaynak">Model: Hillier &amp; Lieberman'ın Wyndor Glass örneği.</p>

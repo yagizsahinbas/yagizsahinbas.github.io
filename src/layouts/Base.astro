@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  aktif?: 'masa' | 'defter' | 'cv';
+  bodyBg?: string;
+}
+const {
+  title,
+  description = 'Yağız Şahinbaş — masası, defteri ve biraz da CV’si.',
+  aktif,
+  bodyBg = 'var(--krem)',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/foto.jpg', Astro.site)} />
+    <meta name="theme-color" content="#E86743" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+    />
+  </head>
+  <body style={`background:${bodyBg}`}>
+    <header class="site-header">
+      <div class="wrap">
+        <div class="left">
+          <a class="logo" href="/" aria-label="Yağız Şahinbaş — masaya dön"><span class="sigmask"></span></a>
+          <nav class="nav" aria-label="Ana menü">
+            <a href="/" aria-current={aktif === 'masa' ? 'page' : undefined}>Masa</a>
+            <a href="/defter/" aria-current={aktif === 'defter' ? 'page' : undefined}>Defter</a>
+            <a href="/cv/" aria-current={aktif === 'cv' ? 'page' : undefined}>CV</a>
+          </nav>
+        </div>
+        <slot name="header-right" />
+      </div>
+    </header>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,100 @@
+---
+// Hileli olabilecek bir para: Beta(1,1) önseli, her atışta güncellenen sonsal.
+---
+<section class="tam bayes" aria-label="Etkileşimli Bayes grafiği">
+  <div class="b-in">
+    <div class="b-side">
+      <p class="mono b-formula">sonsal ∝ olabilirlik × önsel<br />Beta(1 + yazı, 1 + tura)</p>
+      <div class="b-btns">
+        <button type="button" class="b-main" id="bOne">Bir kez at</button>
+        <button type="button" class="b-alt" id="bTen">10 kez at</button>
+        <button type="button" class="b-line" id="bShow">parayı göster</button>
+        <button type="button" class="b-link" id="bNew">yeni para</button>
+      </div>
+    </div>
+    <div class="b-chart-wrap">
+      <div class="mono b-stats">
+        <span>atış: <b id="bN">0</b></span>
+        <span>yazı: <b id="bH">0</b> · tura: <b id="bT">0</b></span>
+        <span>tahmin p ≈ <b id="bMean" class="acc">0,50</b></span>
+        <span>P(0,4 &lt; p &lt; 0,6) ≈ <b id="bFair">%20</b></span>
+      </div>
+      <div class="b-chart" id="bChart" role="img" aria-label="İnanç dağılımı">
+        <span class="b-true" id="bTrue" hidden><span class="mono">gerçek p = <span id="bTrueV"></span></span></span>
+      </div>
+      <div class="mono b-axis"><span>0 · hep tura</span><span>0,5 · adil</span><span>1 · hep yazı</span></div>
+      <p class="mono b-seq" id="bSeq">henüz atış yok — düz çizgi: her p eşit derecede olası.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bayes { background: var(--murekkep); color: var(--krem); }
+  .b-in { max-width: 1180px; margin: 0 auto; padding: clamp(36px, 5vw, 64px) clamp(18px, 4vw, 48px); display: flex; flex-wrap: wrap; gap: 40px; }
+  .b-side { flex: 1 1 300px; }
+  .b-formula { margin: 0; font-size: 13px; line-height: 1.7; color: var(--cizgi); }
+  .b-btns { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .b-btns button { font-weight: 700; padding: 12px 18px; min-height: 48px; cursor: pointer; }
+  .b-main { background: var(--turuncu); color: var(--murekkep); border: 2px solid var(--turuncu); }
+  .b-alt { background: var(--kayisi); color: var(--murekkep); border: 2px solid var(--kayisi); }
+  .b-line { background: transparent; color: var(--krem); border: 2px solid var(--krem); }
+  .b-link { background: transparent; color: var(--krem); border: 0; border-bottom: 2px solid var(--krem); padding-left: 4px !important; padding-right: 4px !important; }
+  .b-chart-wrap { flex: 999 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .b-stats { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 13px; }
+  .acc { color: var(--turuncu); }
+  .b-chart { position: relative; height: 280px; border-bottom: 2px solid var(--krem); display: flex; align-items: flex-end; gap: 3px; }
+  .b-chart :global(.bar) { flex: 1; min-height: 2px; background: rgba(251,243,232,.82); transition: height .45s cubic-bezier(.3,1.2,.5,1), background .3s; }
+  .b-chart :global(.bar.peak) { background: var(--turuncu); }
+  .b-true { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed var(--kayisi); }
+  .b-true .mono { position: absolute; top: -24px; left: 6px; white-space: nowrap; font-size: 12px; color: var(--kayisi); }
+  .b-true[hidden] { display: none; }
+  .b-axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--cizgi); }
+  .b-seq { margin: 0; font-size: 13px; color: var(--cizgi); min-height: 22px; word-break: break-all; }
+</style>
+
+<script>
+  const $ = (id: string) => document.getElementById(id)!;
+  const N = 40;
+  const chart = $('bChart');
+  const bars: HTMLElement[] = [];
+  for (let i = 0; i < N; i++) { const b = document.createElement('span'); b.className = 'bar'; chart.appendChild(b); bars.push(b); }
+  let h = 0, t = 0, seq = '', p = 0.7;
+  const fmt = (x: number) => x.toFixed(2).replace('.', ',');
+
+  function draw() {
+    const logs = bars.map((_, i) => { const q = (i + .5) / N; return h * Math.log(q) + t * Math.log(1 - q); });
+    const mx = Math.max(...logs);
+    const w = logs.map((l) => Math.exp(l - mx));
+    const sum = w.reduce((a, b) => a + b, 0), peak = Math.max(...w);
+    const mean = (h + 1) / (h + t + 2);
+    let fair = 0;
+    w.forEach((v, i) => { const q = (i + .5) / N; if (q > .4 && q < .6) fair += v; });
+    bars.forEach((b, i) => {
+      b.style.height = (w[i] / peak) * 100 + '%';
+      b.classList.toggle('peak', Math.abs((i + .5) / N - mean) < 1 / N);
+    });
+    $('bN').textContent = String(h + t); $('bH').textContent = String(h); $('bT').textContent = String(t);
+    $('bMean').textContent = fmt(mean);
+    $('bFair').textContent = '%' + Math.round((fair / sum) * 100);
+    chart.setAttribute('aria-label', `${h + t} atıştan sonra yazı olasılığına dair inanç dağılımı; tahmin ${fmt(mean)}`);
+    $('bSeq').textContent = h + t ? 'son atışlar: ' + seq.split('').join(' ') : 'henüz atış yok — düz çizgi: her p eşit derecede olası.';
+    ($('bTrue') as HTMLElement).style.left = p * 100 + '%';
+    $('bTrueV').textContent = p.toFixed(1).replace('.', ',');
+  }
+  function flip(n: number) {
+    for (let i = 0; i < n; i++) { if (Math.random() < p) { h++; seq += 'Y'; } else { t++; seq += 'T'; } }
+    seq = seq.slice(-48); draw();
+  }
+  $('bOne').addEventListener('click', () => flip(1));
+  $('bTen').addEventListener('click', () => flip(10));
+  $('bShow').addEventListener('click', () => {
+    const el = $('bTrue') as HTMLElement; el.hidden = !el.hidden;
+    $('bShow').textContent = el.hidden ? 'parayı göster' : 'parayı sakla';
+  });
+  $('bNew').addEventListener('click', () => {
+    const opts = [.2, .3, .4, .5, .5, .6, .7, .8];
+    p = opts[Math.floor(Math.random() * opts.length)]; h = 0; t = 0; seq = '';
+    ($('bTrue') as HTMLElement).hidden = true; $('bShow').textContent = 'parayı göster'; draw();
+  });
+  draw();
+</script>

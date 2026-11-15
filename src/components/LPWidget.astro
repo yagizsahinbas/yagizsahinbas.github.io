@@ -1,0 +1,140 @@
+---
+// Wyndor Glass LP'si: iki değişken, üç kısıt. Katsayılar kaydırılabilir.
+---
+<section class="tam lp" aria-label="Etkileşimli LP grafiği">
+  <div class="lp-in">
+    <div class="lp-side">
+      <pre class="lp-model">max  Z = <b id="lpC1t">3</b>x₁ + <b id="lpC2t">5</b>x₂
+öyle ki   x₁        ≤  4
+               2x₂  ≤ 12
+          3x₁ + 2x₂ ≤ 18
+          x₁, x₂ ≥ 0</pre>
+      <div>
+        <label for="lpC1"><span>x₁’in katsayısı</span><span class="mono" id="lpC1v">3</span></label>
+        <input id="lpC1" type="range" min="0" max="10" step="1" value="3" />
+      </div>
+      <div>
+        <label for="lpC2"><span>x₂’nin katsayısı</span><span class="mono" id="lpC2v">5</span></label>
+        <input id="lpC2" type="range" min="0" max="10" step="1" value="5" />
+      </div>
+      <div class="lp-opt">
+        <div class="mono">OPTİMUM</div>
+        <div class="lp-opt-v" id="lpOpt"></div>
+        <div id="lpNote"></div>
+      </div>
+      <div class="lp-btns">
+        <button type="button" class="lp-step" id="lpStep">simpleks adımı at</button>
+        <button type="button" class="lp-reset" id="lpReset">baştan</button>
+      </div>
+      <p class="mono lp-text" id="lpText" aria-live="polite"></p>
+    </div>
+    <div class="lp-fig">
+      <svg id="lpSvg" viewBox="0 0 520 520" role="img" aria-label="Uygun bölge ve eş-kâr doğrusu"></svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lp { background: var(--turuncu); border-top: 2px solid var(--murekkep); border-bottom: 2px solid var(--murekkep); }
+  .lp-in { max-width: 1180px; margin: 0 auto; padding: clamp(28px, 4vw, 56px) clamp(18px, 4vw, 48px); display: flex; flex-wrap: wrap; gap: 36px; align-items: flex-start; }
+  .lp-side { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+  .lp-model { margin: 0; font-family: var(--mono); font-size: 15px; line-height: 1.75; background: var(--murekkep); color: var(--krem); padding: 18px 20px; overflow-x: auto; }
+  .lp-model b { color: var(--kayisi); }
+  label { display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; }
+  input[type=range] { accent-color: var(--murekkep); width: 100%; height: 28px; cursor: pointer; }
+  .lp-opt { background: var(--krem); border: 2px solid var(--murekkep); padding: 16px 18px; font-size: 15px; }
+  .lp-opt .mono { font-size: 12px; }
+  .lp-opt-v { font-weight: 800; font-size: 32px; letter-spacing: -.03em; line-height: 1.1; }
+  .lp-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .lp-step { font-size: 15px; font-weight: 700; background: var(--murekkep); color: var(--krem); border: 2px solid var(--murekkep); padding: 12px 16px; min-height: 48px; cursor: pointer; }
+  .lp-reset { font-size: 15px; font-weight: 600; background: transparent; border: 2px solid var(--murekkep); padding: 12px 16px; min-height: 48px; cursor: pointer; }
+  .lp-text { margin: 0; font-size: 13px; line-height: 1.6; min-height: 42px; }
+  .lp-fig { flex: 999 1 460px; min-width: 0; background: var(--krem); border: 2px solid var(--murekkep); }
+  .lp-fig svg { display: block; width: 100%; height: auto; }
+</style>
+
+<script>
+  const $ = (id: string) => document.getElementById(id)!;
+  const c1In = $('lpC1') as HTMLInputElement, c2In = $('lpC2') as HTMLInputElement;
+  const svg = $('lpSvg');
+  const V = [[0, 0], [4, 0], [4, 3], [2, 6], [0, 6]];
+  const X = (x: number) => 50 + x * 60, Y = (y: number) => 470 - y * 48;
+  let k = 0;
+  const M = 'font-family="JetBrains Mono, monospace"';
+
+  function draw() {
+    const c1 = +c1In.value, c2 = +c2In.value;
+    $('lpC1v').textContent = $('lpC1t').textContent = String(c1);
+    $('lpC2v').textContent = $('lpC2t').textContent = String(c2);
+    const zs = V.map((v) => c1 * v[0] + c2 * v[1]);
+    const best = Math.max(...zs);
+    const opt = V.map((_, i) => i).filter((i) => zs[i] === best);
+
+    // orijinden başlayan, iyileştiren kenarlar boyunca yol (ilk adımda Dantzig kuralı)
+    const path = [0];
+    let cur = 0;
+    for (let g = 0; g < 6; g++) {
+      let next = -1;
+      if (cur === 0) { if (c2 > c1 && zs[4] > 0) next = 4; else if (zs[1] > 0) next = 1; else if (zs[4] > 0) next = 4; }
+      else { const imp = [(cur + 1) % 5, (cur + 4) % 5].filter((j) => zs[j] > zs[cur]).sort((a, b) => zs[b] - zs[a]); if (imp.length) next = imp[0]; }
+      if (next < 0) break;
+      path.push(next); cur = next;
+    }
+    const shown = path.slice(0, Math.min(k + 1, path.length));
+    const done = k >= path.length - 1;
+
+    let s = '';
+    for (let i = 1; i <= 7; i++) s += `<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(9)}" stroke="#2A1A12" stroke-opacity=".08"/>`;
+    for (let j = 1; j <= 9; j++) s += `<line x1="${X(0)}" y1="${Y(j)}" x2="${X(7)}" y2="${Y(j)}" stroke="#2A1A12" stroke-opacity=".08"/>`;
+    s += `<polygon points="${V.map((v) => X(v[0]) + ',' + Y(v[1])).join(' ')}" fill="#E86743" fill-opacity=".3" stroke="#2A1A12" stroke-width="2.5"/>`;
+    const dash = (a: number[], b: number[]) => `<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#2A1A12" stroke-width="1.2" stroke-dasharray="3 4"/>`;
+    s += dash([4, 0], [4, 9]) + dash([0, 6], [7, 6]) + dash([0, 9], [6, 0]);
+    s += `<text x="${X(4) + 6}" y="${Y(8.6)}" ${M} font-size="12" fill="#2A1A12">x₁ = 4</text>`;
+    s += `<text x="${X(5.3)}" y="${Y(6) - 6}" ${M} font-size="12" fill="#2A1A12">x₂ = 6</text>`;
+    s += `<text x="${X(4.6)}" y="${Y(2.6)}" ${M} font-size="12" fill="#2A1A12">3x₁+2x₂ = 18</text>`;
+    s += `<line x1="50" y1="470" x2="490" y2="470" stroke="#2A1A12" stroke-width="1.5"/><line x1="50" y1="470" x2="50" y2="30" stroke="#2A1A12" stroke-width="1.5"/>`;
+    s += `<text x="492" y="488" ${M} font-size="13" text-anchor="end" fill="#2A1A12">x₁</text><text x="60" y="34" ${M} font-size="13" fill="#2A1A12">x₂</text>`;
+    for (let i = 0; i <= 7; i++) s += `<text x="${X(i)}" y="488" ${M} font-size="11" fill="#6B5444" text-anchor="middle">${i}</text>`;
+    for (let j = 1; j <= 9; j++) s += `<text x="38" y="${Y(j) + 4}" ${M} font-size="11" fill="#6B5444" text-anchor="middle">${j}</text>`;
+
+    if (c1 > 0 || c2 > 0) {
+      const pts: number[][] = [];
+      const add = (x: number, y: number) => { if (x >= -1e-9 && x <= 7 + 1e-9 && y >= -1e-9 && y <= 9 + 1e-9) pts.push([x, y]); };
+      if (c2 !== 0) { add(0, best / c2); add(7, (best - 7 * c1) / c2); }
+      if (c1 !== 0) { add(best / c1, 0); add((best - 9 * c2) / c1, 9); }
+      if (pts.length >= 2) {
+        pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        const a = pts[0], b = pts[pts.length - 1];
+        s += `<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#2A1A12" stroke-width="3"/>`;
+      }
+      const o = V[opt[0]], len = Math.hypot(c1 * 60, c2 * 48) || 1;
+      const ax = X(o[0]) + c1 * 60 / len * 60, ay = Y(o[1]) - c2 * 48 / len * 60;
+      s += `<line x1="${X(o[0])}" y1="${Y(o[1])}" x2="${ax}" y2="${ay}" stroke="#B2441F" stroke-width="3"/><circle cx="${ax}" cy="${ay}" r="5" fill="#B2441F"/>`;
+    }
+    s += `<polyline points="${shown.map((i) => X(V[i][0]) + ',' + Y(V[i][1])).join(' ')}" fill="none" stroke="#2A1A12" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 9"/>`;
+    V.forEach((v, i) => {
+      const isOpt = opt.includes(i), visited = shown.includes(i);
+      s += `<circle cx="${X(v[0])}" cy="${Y(v[1])}" r="${isOpt ? 9 : 6}" fill="${isOpt ? '#2A1A12' : visited ? '#E86743' : '#FBF3E8'}" stroke="#2A1A12" stroke-width="2"/>`;
+      s += `<text x="${X(v[0]) + 10}" y="${Y(v[1]) - 10}" ${M} font-size="12" font-weight="600" fill="#2A1A12">(${v[0]},${v[1]}) Z=${zs[i]}</text>`;
+    });
+    svg.innerHTML = s;
+
+    const nm = (i: number) => `(${V[i][0]}, ${V[i][1]})`;
+    const multi = opt.length > 1;
+    $('lpOpt').textContent = multi ? `${nm(opt[0])} – ${nm(opt[1])}` : `${nm(opt[0])} · Z = ${best}`;
+    $('lpNote').textContent = c1 === 0 && c2 === 0 ? 'Her nokta aynı: amaç fonksiyonu sıfır.'
+      : multi ? `Eş-kâr doğrusu bir kenara paralel: aradaki her nokta optimum (Z = ${best}).`
+      : 'Bu köşeden hiçbir komşu köşeye geçince Z artmıyor.';
+    const last = shown[shown.length - 1];
+    $('lpText').textContent = k === 0 ? 'Simpleks orijinden, (0, 0) köşesinden başlar. Z = 0.'
+      : `Adım ${shown.length - 1}: ${nm(last)} köşesine geçildi, Z = ${zs[last]}.` + (done ? ' Komşulardan hiçbiri daha iyi değil: dur.' : '');
+    $('lpStep').textContent = done ? 'optimuma ulaşıldı ✓' : 'simpleks adımı at';
+    (svg as unknown as SVGElement).setAttribute('aria-label', 'Uygun bölge ve eş-kâr doğrusu. Optimum ' + $('lpOpt').textContent);
+    return done;
+  }
+  c1In.addEventListener('input', () => { k = 0; draw(); });
+  c2In.addEventListener('input', () => { k = 0; draw(); });
+  $('lpStep').addEventListener('click', () => { if (!draw()) { k++; draw(); } });
+  $('lpReset').addEventListener('click', () => { k = 0; draw(); });
+  draw();
+</script>

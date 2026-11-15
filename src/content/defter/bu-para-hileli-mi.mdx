@@ -1,0 +1,24 @@
+---
+baslik: "Bu para hileli mi?"
+ozet: Yazı-tura atarak Bayes güncellemesi. Önsel, olabilirlik, sonsal; üç kelime, bir grafik.
+kategori: istatistik
+tarih: 2026-11-15
+oynanabilir: true
+---
+import BayesWidget from '../../components/BayesWidget.astro';
+
+Elinde yazı gelme olasılığını (p) bilmediğin bir para var. Başta hiçbir fikrin yok: p'nin 0 ile 1 arasındaki her değeri eşit derecede mümkün. Bu, düz bir önsel.
+
+Her atış inancını biraz kaydırıyor. Yazı gelirse yüksek p değerleri biraz daha olası hâle geliyor, tura gelirse düşükler. Bayes kuralı bu kaymayı tam olarak hesaplıyor.
+
+<BayesWidget />
+
+## Ne görüyoruz?
+
+Çubuklar, p'nin her değeri için ne kadar inandığını gösteriyor. Birkaç atıştan sonra dağılım hâlâ geniş: veri az, emin olamazsın. Atış sayısı arttıkça dağılım daralıyor ve gerçek p'nin etrafında toplanıyor.
+
+Turuncu çubuk tahminini gösteriyor: (yazı + 1) / (atış + 2). Hiç atış yokken 0,5; yani "bilmiyorum" demenin matematiksel hâli.
+
+## Dene
+
+"10 kez at"a birkaç kez bas, sonra "parayı göster". Tahminin gerçek değere ne kadar yaklaştı? Sonra "yeni para" ile baştan başla; bazen adil bir para da arka arkaya yazı getirir. Bayes buna kolay kanmaz.

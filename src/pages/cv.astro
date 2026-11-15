@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+
+const deneyim = [
+  { ne: 'Ağu 2026 —', rol: 'NPI & System Intelligence Stajyeri', yer: 'Beko', satir: 'Yeni ürünlerin devreye alınma süreci ve bu sürecin arkasındaki sistemler.' },
+  { ne: 'Tem — Ağu 2026', rol: 'Üretim & Dijital Dönüşüm Stajyeri', yer: 'Dalgakıran Kompresör', satir: 'Üretim ve dijital dönüşüm tarafında yaz stajı.' },
+  { ne: 'Ağu 2024 — Haz 2026', rol: 'Dijital Operasyonlar', yer: '5N1PR İletişim Danışmanlığı', satir: 'Ajans ve müşterileri için dijital projeler ve yapay zekâ işleri; proje takibi, iş düzeni ve tekrar eden işlerin otomasyonu için iç sistemler.' },
+  { ne: 'Sürüyor', rol: 'Kurucu Ortak', yer: 'Fintech Vizyon', satir: 'Fintech, dijital bankacılık ve ödemeler üzerine bağımsız bir medya platformu. Web sitesini kurdum; LinkedIn’deki editoryal planı ve içerik üretimini yürüttüm.' },
+];
+const projeler = [
+  { ne: 'Mar 2026', rol: 'Akbank Case Marathon — Birincilik', satir: 'Akbank Kadın Platformu için yerel ve global kıyaslamalarla geliştirilmiş, yaşam döngüsü temelli bir yeniden tasarım.' },
+  { ne: 'May 2026', rol: 'GSÜFEST 2026', satir: 'İki günlük öğrenci festivalinde bütçe yönetimi; iletişim, lojistik ve sahne operasyonu koordinasyonu.' },
+];
+---
+<Base title="CV — Yağız Şahinbaş" aktif="cv">
+  <main class="wrap cv">
+    <div class="cv-top">
+      <img src="/foto.jpg" alt="Yağız Şahinbaş" width="116" height="116" />
+      <div>
+        <p class="el kicker">masanın toplu köşesi</p>
+        <h1>Yağız Şahinbaş</h1>
+        <p class="contact">İstanbul · <a href="mailto:yagiz.sahinbas@gmail.com">yagiz.sahinbas@gmail.com</a> · <a href="https://linkedin.com/in/yagiz-sahinbas" rel="me">LinkedIn</a></p>
+      </div>
+    </div>
+
+    <p class="lead">Galatasaray Üniversitesi'nde endüstri mühendisliği öğrencisiyim. Ürün yönetimi ve pazarlama ilgimi çekiyor; özellikle iş süreçlerini teknolojiyle iyileştirmek.</p>
+
+    <section>
+      <h2 class="mono">DENEYİM</h2>
+      {deneyim.map((x) => (
+        <div class="row">
+          <span class="mono when">{x.ne}</span>
+          <span class="what"><b>{x.rol}</b><span class="org">{x.yer}</span><span class="line">{x.satir}</span></span>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2 class="mono">PROJELER</h2>
+      {projeler.map((x) => (
+        <div class="row">
+          <span class="mono when">{x.ne}</span>
+          <span class="what"><b>{x.rol}</b><span class="line">{x.satir}</span></span>
+        </div>
+      ))}
+    </section>
+
+    <div class="cols">
+      <section>
+        <h2 class="mono">EĞİTİM</h2>
+        <p><b>Galatasaray Üniversitesi</b><br />Endüstri Mühendisliği, lisans · 2023 —<br /><span class="org">Sınıf temsilcisi</span></p>
+        <p><b>İstanbul Atatürk Fen Lisesi</b><br />2020 — 2023</p>
+      </section>
+      <section>
+        <h2 class="mono">GÖNÜLLÜ</h2>
+        <p><b>AFLİM</b> · İletişim Komitesi Başkanı, Yedek Denetim Kurulu Üyesi · 2025 —</p>
+        <p><b>GSÜ Müzik Kulübü</b> · Sayman · 2025 —</p>
+      </section>
+      <section>
+        <h2 class="mono">DİLLER</h2>
+        <p>Türkçe (ana dil)<br />İngilizce (profesyonel)<br />Fransızca (B2, DELF)</p>
+      </section>
+    </div>
+
+    <p class="el back"><a href="/">← dağınık kısma geri dön</a></p>
+  </main>
+</Base>
+
+<style>
+  .cv { max-width: 1100px; padding-top: clamp(40px, 6vw, 80px); padding-bottom: clamp(40px, 6vw, 80px); }
+  .cv-top { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; border-bottom: 2px solid var(--murekkep); padding-bottom: 32px; }
+  .cv-top img { width: 116px; height: 116px; object-fit: cover; object-position: 50% 30%; border-radius: 50%; border: 3px solid var(--turuncu); }
+  .kicker { margin: 0; font-size: 26px; color: var(--turuncu-yazi); }
+  h1 { margin: 2px 0 6px; font-weight: 800; font-size: clamp(40px, 5.6vw, 68px); line-height: .95; letter-spacing: -.04em; }
+  .contact { margin: 0; color: var(--soluk); }
+  .lead { margin: 28px 0 0; max-width: 720px; font-size: 19px; }
+  section { margin-top: 48px; }
+  h2 { margin: 0 0 6px; font-size: 13px; letter-spacing: .1em; color: var(--turuncu-yazi); font-weight: 600; }
+  .row { display: flex; flex-wrap: wrap; gap: 4px 28px; padding: 18px 0; border-bottom: 1px solid var(--cizgi); }
+  .when { flex: 0 0 170px; font-size: 13px; color: var(--soluk); padding-top: 4px; }
+  .what { flex: 999 1 380px; min-width: 0; }
+  .what b { display: block; font-size: 20px; line-height: 1.25; }
+  .org { display: block; color: var(--soluk); }
+  .line { display: block; margin-top: 6px; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0 36px; }
+  .cols section { margin-top: 48px; }
+  .cols p { margin: 0 0 16px; }
+  .back { margin: 56px 0 0; font-size: 26px; }
+  .back a { text-decoration: none; }
+</style>
